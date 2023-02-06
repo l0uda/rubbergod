@@ -54,12 +54,14 @@ class Random(commands.Cog):
                 boolik = '-' in channel.name
                 name = channel.name.split('-')[0] if boolik else channel.name
                 sub = self.repo.get_subject_details(name)
+                logChannel = self.bot.get_channel(config.log_channel)
                 if sub:
+                    newName = sub.name + ', but ' + '-'.join(channel.name.split('-')[1:])
                     if channel.topic:
-                        if channel.topic != sub.name and channel.topic != sub.name + ', but ' + '-'.join(channel.name.split('-')[1:]):
-                            await self.bot.get_channel(config.log_channel).send(channel.name+' - '+channel.topic+sub.name)
+                        if channel.topic != sub.name and channel.topic != newName:
+                            await logChannel.send(channel.name+' - '+channel.topic+sub.name)
                     else:
-                        await channel.edit(topic = sub.name if not boolik else sub.name + ', but ' + '-'.join(channel.name.split('-')[1:]))
+                        await channel.edit(topic = sub.name if not boolik else newName)
 
     @cooldowns.short_cooldown
     @commands.slash_command(name="flip", description=Messages.random_flip_brief)
